@@ -3,7 +3,7 @@ export const DEFAULT_BASE_PATH = 'http://localhost';
 export const DEFAULT_MONGO_DB_PATH = 'mongodb://0.0.0.0:27017';
 export const DEFAULT_MONGO_DB_NAME = 'mestodb';
 
-export enum STATUS_CODES {
+export enum STATUS_CODE {
   OK = 200,
   CREATED = 201,
   BAD_REQUEST = 400,

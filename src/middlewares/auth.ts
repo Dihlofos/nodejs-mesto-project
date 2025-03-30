@@ -1,9 +1,9 @@
 // Auth Mock
-import { NextFunction, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-export function auth(req: any, _res: Response, next: NextFunction) {
+export function auth(req: Request, _res: Response, next: NextFunction) {
   req.user = {
-    _id: '67e23289866a0e39c2ae64d3',
+    _id: '67e8db39372cc89c98a2ee68',
   };
 
   next();

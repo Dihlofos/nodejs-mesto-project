@@ -10,6 +10,7 @@ import cardsRouter from './routes/cards';
 // eslint-disable-next-line
 import expressTypes from './types/express';
 import { auth } from './middlewares/auth';
+import { errorHandler } from './errors/error-handler';
 
 const {
   PORT = DEFAULT_PORT,
@@ -30,6 +31,8 @@ app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.table({

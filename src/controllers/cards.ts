@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { STATUS_CODES } from '../utils/constants';
+import { STATUS_CODE } from '../utils/constants';
 import Card from '../models/card';
+import CustomError from '../errors/custom-errors';
 
 export async function getCards(req: Request, res: Response, next: NextFunction) {
   return Card.find({})
@@ -17,10 +18,10 @@ export async function createCard(req: Request, res: Response, next: NextFunction
     link,
     owner,
   })
-    .then((card) => res.status(STATUS_CODES.CREATED).send(card))
+    .then((card) => res.status(STATUS_CODE.CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new Error('Некорректные данные'));
+        next(new CustomError(STATUS_CODE.BAD_REQUEST, 'Некорректные данные'));
       } else {
         next(err);
       }
@@ -30,14 +31,16 @@ export async function createCard(req: Request, res: Response, next: NextFunction
 
 export async function deleteCard(req: Request, res: Response, next: NextFunction) {
   return Card.findById(req.params.cardId)
-    .orFail(new Error('Карточки не существует'))
-    .then((card) => {
-      if (card.owner.toString() !== req.user._id) {
-        next(new Error('Ошибка прав доступа'));
+    .orFail(new CustomError(STATUS_CODE.NOT_FOUND, 'Карточки не существует'))
+    .then(() => {
+      Card.findByIdAndDelete(req.params.cardId)
+        .then((cardInfo) => res.send(cardInfo));
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new CustomError(STATUS_CODE.BAD_REQUEST, 'Некорректные данные'));
       } else {
-        Card.findByIdAndDelete(req.params.cardId)
-          .then((cardInfo) => res.send(cardInfo))
-          .catch(next);
+        next(err);
       }
     })
     .catch(next);
@@ -51,11 +54,11 @@ export async function likeCard(req: Request, res: Response, next: NextFunction) 
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new Error('Карточки не существует'))
-    .then((card) => res.status(STATUS_CODES.OK).send(card))
+    .orFail(() => new CustomError(STATUS_CODE.NOT_FOUND, 'Карточки не существует'))
+    .then((card) => res.status(STATUS_CODE.OK).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new Error('Некорректные данные'));
+        next(new CustomError(STATUS_CODE.BAD_REQUEST, 'Некорректные данные'));
       } else {
         next(err);
       }
@@ -71,11 +74,11 @@ export async function dislikeCard(req: Request, res: Response, next: NextFunctio
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new Error('Карточки не существует'))
-    .then((card) => res.status(STATUS_CODES.OK).send(card))
+    .orFail(() => new CustomError(STATUS_CODE.NOT_FOUND, 'Карточки не существует'))
+    .then((card) => res.status(STATUS_CODE.OK).send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new Error('Некорректные данные'));
+        next(new CustomError(STATUS_CODE.BAD_REQUEST, 'Некорректные данные'));
       } else {
         next(err);
       }
