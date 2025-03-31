@@ -13,8 +13,7 @@ export function getUser(req: Request, res: Response, next: NextFunction) {
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
 
 export function getUsers(_req: Request, res: Response, next: NextFunction) {
@@ -46,8 +45,7 @@ export async function createUser(req: Request, res: Response, next: NextFunction
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
 
 export function updateUser(req: Request, res: Response, next: NextFunction) {
@@ -69,8 +67,7 @@ export function updateUser(req: Request, res: Response, next: NextFunction) {
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
 
 export function updateUserAvatar(req: Request, res: Response, next: NextFunction) {
@@ -92,6 +89,5 @@ export function updateUserAvatar(req: Request, res: Response, next: NextFunction
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }

@@ -11,6 +11,7 @@ import cardsRouter from './routes/cards';
 import expressTypes from './types/express';
 import { auth } from './middlewares/auth';
 import { errorHandler } from './errors/error-handler';
+import { notFound } from './middlewares/notFound';
 
 const {
   PORT = DEFAULT_PORT,
@@ -31,6 +32,7 @@ app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardsRouter);
+app.use('*', notFound);
 
 app.use(errorHandler);
 

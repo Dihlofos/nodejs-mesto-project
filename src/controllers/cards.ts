@@ -25,8 +25,7 @@ export async function createCard(req: Request, res: Response, next: NextFunction
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
 
 export async function deleteCard(req: Request, res: Response, next: NextFunction) {
@@ -42,8 +41,7 @@ export async function deleteCard(req: Request, res: Response, next: NextFunction
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
 
 export async function likeCard(req: Request, res: Response, next: NextFunction) {
@@ -62,8 +60,7 @@ export async function likeCard(req: Request, res: Response, next: NextFunction) 
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
 
 export async function dislikeCard(req: Request, res: Response, next: NextFunction) {
@@ -82,6 +79,5 @@ export async function dislikeCard(req: Request, res: Response, next: NextFunctio
       } else {
         next(err);
       }
-    })
-    .catch(next);
+    });
 }
