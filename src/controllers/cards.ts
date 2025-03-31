@@ -31,9 +31,14 @@ export async function createCard(req: Request, res: Response, next: NextFunction
 export async function deleteCard(req: Request, res: Response, next: NextFunction) {
   return Card.findById(req.params.cardId)
     .orFail(new CustomError(STATUS_CODE.NOT_FOUND, 'Карточки не существует'))
-    .then(() => {
-      Card.findByIdAndDelete(req.params.cardId)
-        .then((cardInfo) => res.send(cardInfo));
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        next(new CustomError(STATUS_CODE.FORBIDDEN, 'Ошибка прав доступа'));
+      } else {
+        Card.findByIdAndDelete(req.params.cardId)
+          .then((cardInfo) => res.send(cardInfo))
+          .catch(next);
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {

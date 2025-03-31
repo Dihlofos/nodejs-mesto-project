@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
+import { errors } from 'celebrate';
 import {
   DEFAULT_BASE_PATH, DEFAULT_MONGO_DB_NAME, DEFAULT_MONGO_DB_PATH, DEFAULT_PORT,
 } from './utils/constants';
@@ -12,6 +13,9 @@ import expressTypes from './types/express';
 import { auth } from './middlewares/auth';
 import { errorHandler } from './errors/error-handler';
 import { notFound } from './middlewares/notFound';
+import { createUser, login } from './controllers/users';
+import { errorLogger, requestLogger } from './middlewares/logger';
+import { userLoginValidate } from './middlewares/validations';
 
 const {
   PORT = DEFAULT_PORT,
@@ -26,14 +30,20 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(DATABASE);
 
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use(helmet());
 
 app.use(auth);
 
-app.use('/users', userRouter);
-app.use('/cards', cardsRouter);
+app.use('/users', userLoginValidate, userRouter);
+app.use('/cards', userLoginValidate, cardsRouter);
+
 app.use('*', notFound);
 
+app.use(errorLogger);
+app.use(errors());
+app.use(requestLogger);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

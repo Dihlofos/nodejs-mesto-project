@@ -1,10 +1,29 @@
 // Auth Mock
 import { NextFunction, Request, Response } from 'express';
+import { STATUS_CODE } from '../utils/constants';
+import CustomError from '../errors/custom-errors';
 
-export function auth(req: Request, _res: Response, next: NextFunction) {
-  req.user = {
-    _id: '67e8db39372cc89c98a2ee68',
-  };
+const jwt = require('jsonwebtoken');
+
+export function auth(req: Request, res: Response, next: NextFunction) {
+  const { cookie } = req.headers;
+
+  if (!cookie || !cookie.startsWith('jwt=')) {
+    next(new CustomError(STATUS_CODE.UNAUTHORIZED, 'Вы не авторизованы'));
+    return;
+  }
+
+  const token = cookie.replace('jwt=', '');
+  let payload;
+
+  try {
+    payload = jwt.verify(token, 'key');
+  } catch {
+    next(new CustomError(STATUS_CODE.UNAUTHORIZED, 'Вы не авторизованы'));
+    return;
+  }
+
+  req.user = payload;
 
   next();
 }
