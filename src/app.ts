@@ -8,8 +8,7 @@ import {
 } from './utils/constants';
 import userRouter from './routes/users';
 import cardsRouter from './routes/cards';
-// eslint-disable-next-line
-import expressTypes from './types/express';
+import types from './types/index.d';
 import { auth } from './middlewares/auth';
 import { errorHandler } from './errors/error-handler';
 import { notFound } from './middlewares/notFound';
@@ -30,14 +29,14 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoose.connect(DATABASE);
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', userLoginValidate, login);
+app.post('/signup', userLoginValidate, createUser);
 app.use(helmet());
 
 app.use(auth);
 
-app.use('/users', userLoginValidate, userRouter);
-app.use('/cards', userLoginValidate, cardsRouter);
+app.use('/users', userRouter);
+app.use('/cards', cardsRouter);
 
 app.use('*', notFound);
 
